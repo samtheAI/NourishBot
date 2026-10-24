@@ -453,8 +453,13 @@ if analyze and image_bytes:
                 st.session_state.result_workflow = st.session_state.workflow_control
         except Exception as exc:
             message = str(exc)
-            if "api_key" in message.lower() or "authentication" in message.lower():
+            lower_message = message.lower()
+            if "api_key" in lower_message or "authentication" in lower_message:
                 message = "Groq rejected the configured API key. Check the Streamlit secret and try again."
+            elif "rate limit" in lower_message or "rate_limit" in lower_message or "429" in lower_message:
+                message = "Groq is receiving requests too quickly. Please wait about 30 seconds, then try again."
+            elif "timed out" in lower_message or "timeout" in lower_message:
+                message = "Groq took too long to respond. Please try again in a moment."
             st.error(message, icon="⚠️")
 
 if st.session_state.result:
